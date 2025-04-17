@@ -40,7 +40,7 @@ The system uses a workflow-based approach with LangGraph to process SRS document
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/srs-to-fastapi.git
+   git clone git clone https://github.com/anjalihasher17/srs-to-fastapi.git
    cd srs-to-fastapi
    ```
 
