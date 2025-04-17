@@ -18,6 +18,8 @@ from langchain_groq import ChatGroq
 from typing import Annotated
 from langchain_core.messages import AnyMessage
 import re
+import os
+load_dotenv()
 
 class GraphState(BaseModel):
 
@@ -55,7 +57,7 @@ def get_llm(temperature=0.2):
         max_tokens=None,
         timeout=None,
         max_retries=2,
-        api_key="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")
+        api_key=os.getenv("GROQ_API_KEY"))
 
 
 def parse_srs_document(state: GraphState) -> GraphState:
