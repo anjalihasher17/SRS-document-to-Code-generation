@@ -170,7 +170,11 @@ async def get_generated_project(
         message="Project generated successfully"
     )
 
-# Background task to process SRS document
+def zip_generated_project(output_dir: str, zip_file_name: str = "generated_project.zip") -> str:
+    zip_path = os.path.join(os.path.dirname(output_dir), zip_file_name)
+    shutil.make_archive(zip_path.replace('.zip', ''), 'zip', output_dir)
+    return zip_path
+
 async def process_srs_document_task(file_path: str, job_id: str):
     """
     Background task to process an SRS document
@@ -183,32 +187,29 @@ async def process_srs_document_task(file_path: str, job_id: str):
     status_file = job_dir / "status.txt"
     
     try:
-        # Write processing status
         with open(status_file, "w") as f:
             f.write("processing")
         
-        # Process the document using LangGraph
-        # This is a placeholder - the actual implementation will be in the LangGraph workflow
         project_id, langsmith_trace_url = await process_srs_document(file_path)
-        
-        # Write project ID
+
         with open(job_dir / "project_id.txt", "w") as f:
             f.write(project_id)
         
-        # Write LangSmith trace URL if available
         if langsmith_trace_url:
             with open(GENERATED_DIR / project_id / "langsmith_trace.txt", "w") as f:
                 f.write(langsmith_trace_url)
         
-        # Update status to completed
         with open(status_file, "w") as f:
             f.write("completed")
+
+        generated_project_path = GENERATED_DIR / project_id
+
+        zip_path = zip_generated_project(generated_project_path)
+
             
     except Exception as e:
-        # Write error message
         with open(job_dir / "error.txt", "w") as f:
             f.write(str(e))
         
-        # Update status to failed
         with open(status_file, "w") as f:
             f.write("failed")
